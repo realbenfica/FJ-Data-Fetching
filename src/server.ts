@@ -1,12 +1,11 @@
- require('dotenv').config()
+require('dotenv').config()
+import dbSetup from './db'
+import facebook from './fetch/facebook'
 
- import FB from './fbSetup'
+dbSetup().then(() => {
+  new facebook().start()
+})
+ 
 
-//  FB.api('me/adaccounts', { fields: ['name', 'currency',  'id', 'account_id', 'account_status']} , function (respond) {
-//   if(!respond || respond.error) {
-//     console.log(respond.error);
-//   }
 
-//   console.log(respond)
-// });
  console.log('Im running')
