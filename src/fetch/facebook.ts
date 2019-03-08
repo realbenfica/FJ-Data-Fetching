@@ -1,31 +1,10 @@
 import axios from 'axios'
 import FB from '../fbSetup'
-import Campaign from '../models/Campaign'
-import CampaignInsight from '../models/CampaignInsight'
-import Ad from '../models/CampaignAd'
-import AdCreative from '../models/AdCreative'
+import Campaign, { ICampaign } from '../models/Campaign'
+import CampaignInsight, { ICampaignInsight } from '../models/CampaignInsight'
+import CampaignAd, { IAd } from '../models/CampaignAd'
+import AdCreative, { IAdCreative } from '../models/AdCreative'
 
-
-interface ICampaign {
-  id: string
-  account_id: string 
-  name: string 
-  effective_status: string
-  objective: string
-  start_time: Date
-  stop_time: Date
-}
-
-interface IAd {
-  id: string
-  campaign_id:string
-  created_time:string
-  creative:string
-  effective_status:string
-  name:string
-  status:string
-  updated_time:string
-}
 
 interface IAdInsights {
   ad_id:string
@@ -46,34 +25,6 @@ interface IAdInsights {
   unique_ctr:string
   video_avg_percent_watched_actions:string
   video_avg_time_watched_actions:string
-}
-
-interface ICampaignInsight {
-  campaign_id: string
-  clicks:string
-  cost_per_unique_click:string
-  cpc:string
-  cpm:string
-  cpp:string
-  ctr:string
-  date_start:string
-  date_stop:string
-  frequency:string
-  impressions:string
-  objective:string
-  reach:string
-  spend:string
-  unique_clicks:string
-  unique_ctr:string
-}
-
-interface IAdCreative {
-  id: string
-  video_id:string
-  name:string
-  status:string
-  title:string
-  thumbnail_url:string
 }
 
 export default class FacebookFetch {
@@ -212,10 +163,10 @@ export default class FacebookFetch {
 
   private async saveCampaignAd(ads: IAd[]) {
     for(let ad of ads) {
-      let newAd:Ad = await Ad.findOne({id: ad.id})
+      let newAd:CampaignAd = await CampaignAd.findOne({id: ad.id})
 
       if(!newAd) {
-        newAd = new Ad()
+        newAd = new CampaignAd()
         newAd.campaign_id = ad.campaign_id
         newAd.id = ad.id
       }

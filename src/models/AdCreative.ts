@@ -20,3 +20,12 @@ export default class AdCreative extends BaseEntity {
   @Column({nullable: true})
   thumbnail_url:string
 }
+
+export interface IAdCreative {
+  id: string
+  video_id:string
+  name:string
+  status:string
+  title:string
+  thumbnail_url:string
+}

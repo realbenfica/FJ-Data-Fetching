@@ -23,3 +23,13 @@ export default class Campaign extends BaseEntity {
   @Column({nullable: true})
   stop_time: Date
 }
+
+export interface ICampaign {
+  id: string
+  account_id: string 
+  name: string 
+  effective_status: string
+  objective: string
+  start_time: Date
+  stop_time: Date
+}

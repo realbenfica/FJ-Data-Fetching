@@ -29,3 +29,14 @@ export default class CampaignAd extends BaseEntity {
   @Column({nullable: false})
   video_id:string
 }
+
+export interface IAd {
+  id: string
+  campaign_id:string
+  created_time:string
+  creative:string
+  effective_status:string
+  name:string
+  status:string
+  updated_time:string
+}

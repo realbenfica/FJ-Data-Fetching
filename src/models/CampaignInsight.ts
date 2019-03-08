@@ -50,3 +50,22 @@ export default class CampaignInsight extends BaseEntity {
   @Column({nullable: true})
   unique_ctr:string
 }
+
+export interface ICampaignInsight {
+  campaign_id: string
+  clicks:string
+  cost_per_unique_click:string
+  cpc:string
+  cpm:string
+  cpp:string
+  ctr:string
+  date_start:string
+  date_stop:string
+  frequency:string
+  impressions:string
+  objective:string
+  reach:string
+  spend:string
+  unique_clicks:string
+  unique_ctr:string
+}
