@@ -1,66 +1,17 @@
 import axios from 'axios'
 import FB from '../fbSetup'
+
 import Campaign, { ICampaign } from '../models/Campaign'
 import CampaignInsight, { ICampaignInsight } from '../models/CampaignInsight'
+import CampaignAdInsight, { IVideoDetail, IAdInsight, IVideoInsight, ICampaignAdInsight } from '../models/CampaignAdInsight';
 import CampaignAd, { IAd } from '../models/CampaignAd'
 import AdCreative, { IAdCreative } from '../models/AdCreative'
 
-
-interface IAdInsights {
-  ad_id:string
-  adset_id:string
-  clicks:string
-  cpc:string
-  cpm:string
-  cpp:string
-  ctr:string
-  date_start:string
-  date_stop:string
-  frequency:string
-  impressions:string
-  objective:string
-  reach:string
-  spend:string
-  unique_clicks:string
-  unique_ctr:string
-  video_avg_percent_watched_actions:string
-  video_avg_time_watched_actions:string
-}
-
 export default class FacebookFetch {
 
-  private accountId = process.env.FB_ACCOUNT_ID
+  private accountId:string = process.env.FB_ACCOUNT_ID
 
-  private fetchCampaignInsights(campaignId: string):Promise<ICampaignInsight> {
-
-    return new Promise((resolve, reject) => {
-      FB.api(`${campaignId}/insights`, { 
-        fields: [
-          'campaign_id',
-          'clicks',
-          'cost_per_unique_click',
-          'cpc',
-          'cpm',
-          'cpp',
-          'ctr',
-          'date_start',
-          'date_stop',
-          'frequency',
-          'impressions',
-          'objective',
-          'reach',
-          'spend',
-          'unique_clicks',
-          'unique_ctr',
-        ], date_preset: "lifetime"} , function (respond) {
-        if(!respond || respond.error) {  
-          reject()
-        }
-
-        resolve(respond.data[0])
-      });
-    })
-  }
+  
 
   private async getCampaigns() {
     try {
@@ -119,6 +70,35 @@ export default class FacebookFetch {
     await newCampaign.save()
   }
 
+  private fetchCampaignInsights(campaignId: string):Promise<ICampaignInsight> {
+    return new Promise((resolve, reject) => {
+      const fields:string[] = [
+        'campaign_id',
+        'clicks',
+        'cost_per_unique_click',
+        'cpc',
+        'cpm',
+        'cpp',
+        'ctr',
+        'date_start',
+        'date_stop',
+        'frequency',
+        'impressions',
+        'objective',
+        'reach',
+        'spend',
+        'unique_clicks',
+        'unique_ctr',
+      ]
+
+      FB.api(`${campaignId}/insights`, { 
+        fields, date_preset: "lifetime"} , function (respond) {
+        if(!respond || respond.error) reject()
+        resolve(respond.data[0])
+      })
+    })
+  }
+
   private async saveCampaignInsights(insight:ICampaignInsight):Promise<void> {
    
     let campaignInsight = await CampaignInsight.findOne({ campaign_id: insight.campaign_id})
@@ -171,6 +151,7 @@ export default class FacebookFetch {
         newAd.id = ad.id
       }
 
+      newAd.video_id = ad.video_id
       newAd.creative = ad.creative
       newAd.created_time =  ad.created_time
       newAd.effective_status = ad.effective_status
@@ -179,6 +160,8 @@ export default class FacebookFetch {
       newAd.updated_time = ad.updated_time
       await newAd.save()
     }
+
+    return
   }
 
   public async getCampaignAds():Promise<void> {
@@ -188,7 +171,7 @@ export default class FacebookFetch {
         await setTimeout(async () => {
           const ads: IAd[] = await this.fetchCampaignAd(campaign.id)
           await this.saveCampaignAd(ads)
-        }, 1000)
+        }, 2000)
       }
     } catch(err) {
       console.log('Error on getting facebook campaign ads',err)
@@ -196,7 +179,7 @@ export default class FacebookFetch {
   }
 
   private async fetchCampaignAd(campaignId):Promise<IAd[]> {
-    return new Promise((resolve, reject) => {
+    return new Promise( (resolve, reject) => {
       FB.api(`${campaignId}/ads`, { 
         fields: [
           'id',
@@ -207,16 +190,21 @@ export default class FacebookFetch {
           'name',
           'status',
           'updated_time'
-        ]} , function (results) {
+        ]} , async (results) => {
   
         if(!results || results.error) {
           reject(results.error)
         }
-
-        console.log(results)
   
         const ads:IAd[] = []
-        results.data.forEach(ad => ads.push({...ad, creative: ad.creative.id}))
+
+        for(let ad of results.data) {
+          const creative:AdCreative = await AdCreative.findOne({id: ad.creative.id})
+          if(creative) {
+            ads.push({...ad, creative: ad.creative.id, video_id: creative.video_id})
+          }
+        }
+
         resolve(ads)
       })
     })
@@ -230,7 +218,6 @@ export default class FacebookFetch {
           'video_id',
           'name',
           'status',
-          'title',
           'thumbnail_url'
         ], date_preset: "lifetime"} , async (respond) => {
         if(!respond || respond.error) {  
@@ -282,12 +269,151 @@ export default class FacebookFetch {
     }
   }
 
+  private async fetchAdInsight(adId:string):Promise<IAdInsight> {
+    return new Promise( (resolve, reject) => {
+      const fields:string[] = [
+        'clicks',
+        'cpc',
+        'cpm',
+        'cpp',
+        'ctr',
+        'frequency',
+        'impressions',
+        'objective',
+        'reach',
+        'spend',
+        'unique_ctr',
+        'unique_clicks',
+        'cost_per_10_sec_video_view',
+        'video_avg_percent_watched_actions'
+      ]
+
+      FB.api(`${adId}/insights`, { 
+        fields, date_preset: "lifetime"
+      } , async (results) => {
+  
+        if(!results || results.error) {
+          reject(results.error)
+        }
+
+        resolve({
+          ...results.data[0],
+          video_avg_percent_watched_actions: results.data[0].video_avg_percent_watched_actions[0].value,
+          cost_per_10_sec_video_view: results.data[0].cost_per_10_sec_video_view[0].value
+        })
+      })
+    })
+  }
+
+  private async fetchVideoInsight(videoId:string):Promise<IVideoInsight> {
+    return new Promise( (resolve, reject) => {
+      const fields:string[] = [
+        'total_video_views_unique',
+        'total_video_avg_time_watched',
+        'total_video_impressions',
+        'total_video_impressions_unique'
+      ]
+
+      FB.api(`${videoId}/video_insights`, { 
+        metric:fields, period: "lifetime", date_preset: "lifetime"
+      } , async (results:any) => {
+  
+        if(!results || results.error) {
+          reject(results.error)
+        }
+
+        let videoInsight:IVideoInsight = {
+          total_video_views_unique: results.data[0].values[0].value,
+          total_video_avg_time_watched: results.data[1].values[0].value,
+          total_video_impressions: results.data[2].values[0].value,
+          total_video_impressions_unique: results.data[3].values[0].value
+        }
+
+        resolve(videoInsight)
+      })
+    })
+  }
+
+  
+
+  private async fetchVideoDetail(videoId:string):Promise<IVideoDetail> {
+    return new Promise( (resolve, reject) => {
+      const fields:string[] = [
+        'id',
+        'icon',
+        'picture',
+        'created_time'
+      ]
+
+      FB.api(`${videoId}/`, { 
+        fields: fields 
+      } , async (results) => {
+  
+        if(!results || results.error) {
+          reject(results.error)
+        }
+
+        resolve({...results, id:videoId})
+      })
+    })
+  }
+
+  private async getCampaignAdInsights():Promise<void> {
+    const ads:CampaignAd[] = await CampaignAd.find()
+
+    for(let ad of ads) {
+      const adInsight:IAdInsight = await this.fetchAdInsight(ad.id)
+      const videoDetail:IVideoDetail = await this.fetchVideoDetail(ad.video_id)
+      const videoInsight:IVideoInsight =  await this.fetchVideoInsight(ad.video_id)
+
+      const campaignAdInsight:ICampaignAdInsight = {
+        ...adInsight,
+        ...videoDetail,
+        ...videoInsight
+      }
+
+      await this.saveCampaignAdInsight(campaignAdInsight)
+    }
+
+  }
+
+  private async saveCampaignAdInsight(insight:ICampaignAdInsight):Promise<void> {
+
+    let newAdInsight:CampaignAdInsight = await CampaignAdInsight.findOne({id: insight.id})
+    if(!newAdInsight) {
+      newAdInsight =  new CampaignAdInsight()
+      newAdInsight.id = insight.id
+    }
+
+    newAdInsight.clicks = insight.clicks
+    newAdInsight.cpc = insight.cpc
+    newAdInsight.cpm = insight.cpm
+    newAdInsight.cpp = insight.cpp
+    newAdInsight.created_time = insight.created_time
+    newAdInsight.ctr = insight.ctr
+    newAdInsight.frequency = insight.frequency
+    newAdInsight.icon = insight.icon
+    newAdInsight.impressions = insight.impressions
+    newAdInsight.objective = insight.objective
+    newAdInsight.picture = insight.picture
+    newAdInsight.reach = insight.reach
+    newAdInsight.spend = insight.spend
+    newAdInsight.total_video_avg_time_watched = insight.total_video_avg_time_watched
+    newAdInsight.total_video_impressions = insight.total_video_impressions
+    newAdInsight.total_video_impressions_unique = insight.total_video_impressions_unique
+    newAdInsight.total_video_views_unique = insight.total_video_views_unique
+    newAdInsight.unique_clicks = insight.unique_clicks
+    newAdInsight.unique_ctr = insight.unique_ctr
+    await newAdInsight.save()
+  }
+
   
 
   public async start() {
     // await this.getCampaigns()
     // await this.getCampaignInsights()
     // await this.getAdCreatives()
-    // await this.getCampaignAds() *
+    // await this.getCampaignAds()
+    await this.getCampaignAdInsights()
   }
 }

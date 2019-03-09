@@ -7,6 +7,7 @@ import Campaign from './models/Campaign'
 import CampaignInsight from './models/CampaignInsight'
 import CampaignAd from './models/CampaignAd'
 import AdCreative from './models/AdCreative'
+import CampaignAdInsight from './models/CampaignAdInsight'
 
 class CustomNamingStrategy extends DefaultNamingStrategy implements NamingStrategyInterface {
 
@@ -35,8 +36,8 @@ export default () =>
       Campaign,
       CampaignInsight,
       CampaignAd,
+      CampaignAdInsight,
       AdCreative
-      
     ],
     ssl: true,
     synchronize: true,

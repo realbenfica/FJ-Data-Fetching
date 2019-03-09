@@ -39,4 +39,5 @@ export interface IAd {
   name:string
   status:string
   updated_time:string
+  video_id:string
 }
