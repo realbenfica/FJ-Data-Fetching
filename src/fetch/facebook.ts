@@ -272,6 +272,7 @@ export default class FacebookFetch {
   private async fetchAdInsight(adId:string):Promise<IAdInsight> {
     return new Promise( (resolve, reject) => {
       const fields:string[] = [
+        'ad_id',
         'clicks',
         'cpc',
         'cpm',
@@ -281,11 +282,7 @@ export default class FacebookFetch {
         'impressions',
         'objective',
         'reach',
-        'spend',
-        'unique_ctr',
-        'unique_clicks',
-        'cost_per_10_sec_video_view',
-        'video_avg_percent_watched_actions'
+        'spend'
       ]
 
       FB.api(`${adId}/insights`, { 
@@ -296,26 +293,19 @@ export default class FacebookFetch {
           reject(results.error)
         }
 
-        resolve({
-          ...results.data[0],
-          video_avg_percent_watched_actions: results.data[0].video_avg_percent_watched_actions[0].value,
-          cost_per_10_sec_video_view: results.data[0].cost_per_10_sec_video_view[0].value
-        })
+        resolve({...results.data[0], ad_id: adId})
       })
     })
   }
 
   private async fetchVideoInsight(videoId:string):Promise<IVideoInsight> {
     return new Promise( (resolve, reject) => {
-      const fields:string[] = [
-        'total_video_views_unique',
-        'total_video_avg_time_watched',
-        'total_video_impressions',
-        'total_video_impressions_unique'
+      const metric:string[] = [
+        'total_video_views_unique'
       ]
 
       FB.api(`${videoId}/video_insights`, { 
-        metric:fields, period: "lifetime", date_preset: "lifetime"
+        metric, period: "lifetime", date_preset: "lifetime"
       } , async (results:any) => {
   
         if(!results || results.error) {
@@ -324,17 +314,12 @@ export default class FacebookFetch {
 
         let videoInsight:IVideoInsight = {
           total_video_views_unique: results.data[0].values[0].value,
-          total_video_avg_time_watched: results.data[1].values[0].value,
-          total_video_impressions: results.data[2].values[0].value,
-          total_video_impressions_unique: results.data[3].values[0].value
         }
 
         resolve(videoInsight)
       })
     })
   }
-
-  
 
   private async fetchVideoDetail(videoId:string):Promise<IVideoDetail> {
     return new Promise( (resolve, reject) => {
@@ -379,10 +364,10 @@ export default class FacebookFetch {
 
   private async saveCampaignAdInsight(insight:ICampaignAdInsight):Promise<void> {
 
-    let newAdInsight:CampaignAdInsight = await CampaignAdInsight.findOne({id: insight.id})
+    let newAdInsight:CampaignAdInsight = await CampaignAdInsight.findOne({ad_id: insight.ad_id})
     if(!newAdInsight) {
       newAdInsight =  new CampaignAdInsight()
-      newAdInsight.id = insight.id
+      newAdInsight.ad_id = insight.ad_id
     }
 
     newAdInsight.clicks = insight.clicks
@@ -398,12 +383,7 @@ export default class FacebookFetch {
     newAdInsight.picture = insight.picture
     newAdInsight.reach = insight.reach
     newAdInsight.spend = insight.spend
-    newAdInsight.total_video_avg_time_watched = insight.total_video_avg_time_watched
-    newAdInsight.total_video_impressions = insight.total_video_impressions
-    newAdInsight.total_video_impressions_unique = insight.total_video_impressions_unique
     newAdInsight.total_video_views_unique = insight.total_video_views_unique
-    newAdInsight.unique_clicks = insight.unique_clicks
-    newAdInsight.unique_ctr = insight.unique_ctr
     await newAdInsight.save()
   }
 
@@ -414,6 +394,6 @@ export default class FacebookFetch {
     // await this.getCampaignInsights()
     // await this.getAdCreatives()
     // await this.getCampaignAds()
-    await this.getCampaignAdInsights()
+    // await this.getCampaignAdInsights()
   }
 }

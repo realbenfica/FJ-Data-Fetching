@@ -1,4 +1,6 @@
-import {Entity, Column, PrimaryColumn, BaseEntity} from "typeorm";
+import {Entity, Column, PrimaryColumn, BaseEntity, OneToMany, OneToOne} from "typeorm";
+import CampaignAd from "./CampaignAd";
+import CampaignInsight from "./CampaignInsight";
 
 @Entity()
 export default class Campaign extends BaseEntity {
@@ -22,6 +24,12 @@ export default class Campaign extends BaseEntity {
 
   @Column({nullable: true})
   stop_time: Date
+
+  @OneToMany(type => CampaignAd, ad => ad.campaign, {eager: true})
+  ads: CampaignAd[]
+
+  @OneToOne(type => CampaignInsight, insight => insight.campaign_id, {eager: true})
+  insight:CampaignInsight
 }
 
 export interface ICampaign {

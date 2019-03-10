@@ -1,4 +1,6 @@
-import {Entity, Column, PrimaryColumn, BaseEntity} from "typeorm";
+import {Entity, Column, PrimaryColumn, BaseEntity, ManyToOne, OneToOne} from "typeorm";
+import Campaign from "./Campaign";
+import CampaignAdInsight from "./CampaignAdInsight";
 
 @Entity()
 export default class CampaignAd extends BaseEntity {
@@ -28,6 +30,12 @@ export default class CampaignAd extends BaseEntity {
 
   @Column({nullable: false})
   video_id:string
+
+  @ManyToOne(type => Campaign, campaign => campaign.ads)
+  campaign:Campaign
+
+  @OneToOne(type => CampaignAdInsight, insight => insight.ad_id)
+  insight:CampaignAdInsight
 }
 
 export interface IAd {
