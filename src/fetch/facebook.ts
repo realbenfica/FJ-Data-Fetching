@@ -1,10 +1,14 @@
+
 import axios from 'axios'
 import FB from '../fbSetup'
 
 import Campaign, { ICampaign, Platform } from '../Campaign/model'
 import { saveCampaign } from '../Campaign/query'
 
-import CampaignInsight, { ICampaignInsight } from '../models/CampaignInsight'
+import CampaignDetail, { ICampaignDetail} from '../CampaignDetail/model'
+import { saveCampaignDetail } from '../CampaignDetail/query'
+
+
 import CampaignAdInsight, { IVideoDetail, IAdInsight, IVideoInsight, ICampaignAdInsight } from '../models/CampaignAdInsight';
 import CampaignAd, { IAd } from '../models/CampaignAd'
 import AdCreative, { IAdCreative } from '../models/AdCreative'
@@ -21,15 +25,13 @@ export default class Facebook {
       for(let campaign of campaigns) {
         await saveCampaign(campaign)
       }
-      
     } catch(err) {
       console.log(err)
     }
     
   }
 
-  public async fetchCampaigns(accountId: string):Promise<ICampaign[]> {
-  
+  private async fetchCampaigns(accountId: string):Promise<ICampaign[]> {
     return new Promise((resolve, reject) => {
       FB.api(`${accountId}/campaigns`, { 
         fields: [
@@ -62,76 +64,56 @@ export default class Facebook {
     })
   }
 
-  private fetchCampaignInsights(campaignId: string):Promise<ICampaignInsight> {
+  private async getCampaignDetails() {
+    try {
+
+      const campaigns:Campaign[] = await Campaign.find({platform: 'FACEBOOK'})
+      for(let campaign of campaigns) {
+        try {
+          const details:ICampaignDetail = await this.fetchCampaignDetails(campaign.id)
+          await saveCampaignDetail(details)
+        } catch(err) {
+
+        }
+        
+      }
+    } catch(err) {
+
+    }
+  }
+
+  private async fetchCampaignDetails(campaignId:string):Promise<ICampaignDetail> {
     return new Promise((resolve, reject) => {
       const fields:string[] = [
         'campaign_id',
-        'clicks',
-        'cost_per_unique_click',
-        'cpc',
-        'cpm',
-        'cpp',
-        'ctr',
-        'date_start',
-        'date_stop',
-        'frequency',
-        'impressions',
-        'objective',
         'reach',
-        'spend',
-        'unique_clicks',
-        'unique_ctr',
+        'ctr',
+        'cpm', //Cost per view *
+        'video_avg_percent_watched_actions', //retention
       ]
 
       FB.api(`${campaignId}/insights`, { 
-        fields, date_preset: "lifetime"} , function (respond) {
+        fields, date_preset:"lifetime"} , function (respond) {
         if(!respond || respond.error) reject()
-        resolve(respond.data[0])
+
+        if(respond && respond.data.length === 1) {
+          const detail:ICampaignDetail = {
+            id: campaignId,
+            retention: respond.data[0].video_avg_percent_watched_actions && respond.data[0].video_avg_percent_watched_actions[0].value,
+            ctr: respond.data[0].ctr,
+            cpv: respond.data[0].cpm,
+            uniqueViews: respond.data[0].reach
+          }
+          resolve(detail)
+        }
+
+        reject()
       })
     })
   }
 
-  private async saveCampaignInsights(insight:ICampaignInsight):Promise<void> {
-   
-    let campaignInsight = await CampaignInsight.findOne({ campaign_id: insight.campaign_id})
 
-    if(!campaignInsight) {
-      campaignInsight = new CampaignInsight()
-      campaignInsight.campaign_id = insight.campaign_id
-    }
 
-    campaignInsight.clicks = insight.clicks
-    campaignInsight.cost_per_unique_click = insight.cost_per_unique_click
-    campaignInsight.cpc = insight.cpc
-    campaignInsight.cpm = insight.cpm
-    campaignInsight.cpp = insight.cpp
-    campaignInsight.ctr = insight.ctr
-    campaignInsight.date_start = insight.date_start
-    campaignInsight.date_stop = insight.date_stop
-    campaignInsight.frequency = insight.frequency
-    campaignInsight.impressions = insight.impressions
-    campaignInsight.objective = insight.objective
-    campaignInsight.reach = insight.reach
-    campaignInsight.spend = insight.spend
-    campaignInsight.unique_clicks = insight.unique_clicks
-    campaignInsight.unique_ctr = insight.unique_ctr
-    await campaignInsight.save()
-    
-  }
-
-  private async getCampaignInsights():Promise<void> {
-    try {
-      const campaigns:Campaign[] = await Campaign.find()
-      for(let campaign of campaigns) { 
-        await setTimeout(async () => {
-          const insights:ICampaignInsight = await this.fetchCampaignInsights(campaign.id)
-          this.saveCampaignInsights(insights)
-        }, 1000)
-      }
-    } catch(err) {
-      console.log('Facebook: Error when fetching the campaign insights')
-    }
-  }
 
   private async saveCampaignAd(ads: IAd[]) {
     for(let ad of ads) {
@@ -384,6 +366,7 @@ export default class Facebook {
 
   public async start() {
     // await this.getCampaigns()
+    await this.getCampaignDetails()
     // await this.getCampaignInsights()
     // await this.getAdCreatives()
     // await this.getCampaignAds()

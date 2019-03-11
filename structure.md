@@ -7,6 +7,17 @@ Campaign {
   status: String
 }
 
+CampaignDetail {
+  id: String
+  campaignId: String
+  uniqueViews: Int
+  ctr: Int
+  cpv:Float
+  retention: Float!
+  softConversion: Int!
+  budget: Float!
+}
+
 VideoAds {
   id: String!
   title: String!

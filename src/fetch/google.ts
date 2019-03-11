@@ -30,12 +30,11 @@ export default class Google {
   }
   private getCampaigns = async () => {
     const campaigns:ICampaign[] = await this.fetchCampaigns()
-    // console.log(campaigns)
     for(let campaign of campaigns) {
       saveCampaign(campaign)
     }
   }
   public start = async () => {
-    this.getCampaigns()
+    // this.getCampaigns()
   }
 }
