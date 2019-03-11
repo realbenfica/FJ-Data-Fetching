@@ -1,5 +1,5 @@
 import {Entity, Column, PrimaryColumn, BaseEntity, ManyToOne, OneToOne} from "typeorm";
-import Campaign from "./Campaign";
+// import Campaign from "./Campaign";
 import CampaignAdInsight from "./CampaignAdInsight";
 
 @Entity()

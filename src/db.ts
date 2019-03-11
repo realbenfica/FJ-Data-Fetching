@@ -3,11 +3,11 @@ import { DefaultNamingStrategy } from 'typeorm/naming-strategy/DefaultNamingStra
 import { NamingStrategyInterface } from 'typeorm/naming-strategy/NamingStrategyInterface'
 import { snakeCase } from 'typeorm/util/StringUtils'
 
-import Campaign from './models/Campaign'
-import CampaignInsight from './models/CampaignInsight'
-import CampaignAd from './models/CampaignAd'
-import AdCreative from './models/AdCreative'
-import CampaignAdInsight from './models/CampaignAdInsight'
+import Campaign from './Campaign/model'
+// import CampaignInsight from './models/CampaignInsight'
+// import CampaignAd from './models/CampaignAd'
+// import AdCreative from './models/AdCreative'
+// import CampaignAdInsight from './models/CampaignAdInsight'
 
 class CustomNamingStrategy extends DefaultNamingStrategy implements NamingStrategyInterface {
 
@@ -34,10 +34,10 @@ export default () =>
     url: process.env.DATABASE_URL || 'postgres://postgres:secret@localhost:5432/postgres',
     entities: [
       Campaign,
-      CampaignInsight,
-      CampaignAd,
-      CampaignAdInsight,
-      AdCreative
+      // CampaignInsight,
+      // CampaignAd,
+      // CampaignAdInsight,
+      // AdCreative
     ],
     ssl: true,
     synchronize: true,

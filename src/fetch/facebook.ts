@@ -1,7 +1,9 @@
 import axios from 'axios'
 import FB from '../fbSetup'
 
-import Campaign, { ICampaign } from '../models/Campaign'
+import Campaign, { ICampaign, Platform } from '../Campaign/model'
+import { saveCampaign } from '../Campaign/query'
+
 import CampaignInsight, { ICampaignInsight } from '../models/CampaignInsight'
 import CampaignAdInsight, { IVideoDetail, IAdInsight, IVideoInsight, ICampaignAdInsight } from '../models/CampaignAdInsight';
 import CampaignAd, { IAd } from '../models/CampaignAd'
@@ -17,7 +19,7 @@ export default class Facebook {
     try {
       const campaigns:ICampaign[] = await this.fetchCampaigns(this.accountId)
       for(let campaign of campaigns) {
-        await this.saveCampaigns(campaign)
+        await saveCampaign(campaign)
       }
       
     } catch(err) {
@@ -43,36 +45,21 @@ export default class Facebook {
         }
 
         const campaigns:ICampaign[] = []
+
         results.data.forEach(campaign => { 
           campaigns.push({
             id: campaign.id,
             name: campaign.name, 
             status: campaign.effective_status,
             startDate: campaign.start_time,
-            stopDate: campaign.stop_time
+            stopDate: campaign.stop_time,
+            platform: Platform.FACEBOOK
           })
         })
 
         resolve(campaigns)
       })
     })
-  }
-
-  async saveCampaigns(campaign:ICampaign):Promise<void> {
-
-    let newCampaign:Campaign = await Campaign.findOne({id: campaign.id})
-    
-    if(!newCampaign) {
-      newCampaign = new Campaign()
-      newCampaign.id = campaign.id
-      newCampaign.name = campaign.name
-      newCampaign.startDate = campaign.startDate
-      newCampaign.platform = 'FACEBOOK'
-      newCampaign.status = campaign.status
-    }
-
-    newCampaign.stopDate = campaign.stopDate
-    await newCampaign.save()
   }
 
   private fetchCampaignInsights(campaignId: string):Promise<ICampaignInsight> {

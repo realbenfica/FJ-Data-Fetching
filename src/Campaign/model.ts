@@ -1,6 +1,4 @@
 import {Entity, Column, PrimaryColumn, BaseEntity, OneToMany, OneToOne} from "typeorm";
-import CampaignAd from "./CampaignAd";
-import CampaignInsight from "./CampaignInsight";
 
 @Entity()
 export default class Campaign extends BaseEntity {
@@ -29,4 +27,10 @@ export interface ICampaign {
   status: string
   startDate: Date
   stopDate: Date
+  platform: Platform
+}
+
+export enum Platform {
+  FACEBOOK = 'FACEBOOK',
+  GOOGLE = 'GOOGLE'
 }
