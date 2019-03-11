@@ -31,11 +31,11 @@ export default class CampaignAd extends BaseEntity {
   @Column({nullable: false})
   video_id:string
 
-  @ManyToOne(type => Campaign, campaign => campaign.ads)
-  campaign:Campaign
+  // @ManyToOne(type => Campaign, campaign => campaign.ads)
+  // campaign:Campaign
 
-  @OneToOne(type => CampaignAdInsight, insight => insight.ad_id)
-  insight:CampaignAdInsight
+  // @OneToOne(type => CampaignAdInsight, insight => insight.ad_id)
+  // insight:CampaignAdInsight
 }
 
 export interface IAd {

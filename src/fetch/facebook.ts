@@ -7,7 +7,7 @@ import CampaignAdInsight, { IVideoDetail, IAdInsight, IVideoInsight, ICampaignAd
 import CampaignAd, { IAd } from '../models/CampaignAd'
 import AdCreative, { IAdCreative } from '../models/AdCreative'
 
-export default class FacebookFetch {
+export default class Facebook {
 
   private accountId:string = process.env.FB_ACCOUNT_ID
 
@@ -59,14 +59,13 @@ export default class FacebookFetch {
     if(!newCampaign) {
       newCampaign = new Campaign()
       newCampaign.id = campaign.id
-      newCampaign.account_id = campaign.account_id
       newCampaign.name = campaign.name
+      newCampaign.start_time = campaign.start_time
+      newCampaign.platform = 'FACEBOOK'
+      newCampaign.status = campaign.effective_status
     }
 
-    newCampaign.start_time = campaign.start_time
     newCampaign.stop_time = campaign.start_time
-    newCampaign.objective = campaign.objective
-    newCampaign.effective_status = campaign.effective_status
     await newCampaign.save()
   }
 
@@ -273,16 +272,17 @@ export default class FacebookFetch {
     return new Promise( (resolve, reject) => {
       const fields:string[] = [
         'ad_id',
-        'clicks',
+        'clicks', //*
         'cpc',
         'cpm',
         'cpp',
         'ctr',
         'frequency',
-        'impressions',
+        'impressions',  //* Views
         'objective',
-        'reach',
-        'spend'
+        'reach', //* => Unique views
+        'spend', 
+        'video_avg_percent_watched_actions' //* View Retention percentage
       ]
 
       FB.api(`${adId}/insights`, { 
@@ -390,7 +390,7 @@ export default class FacebookFetch {
   
 
   public async start() {
-    // await this.getCampaigns()
+    await this.getCampaigns()
     // await this.getCampaignInsights()
     // await this.getAdCreatives()
     // await this.getCampaignAds()

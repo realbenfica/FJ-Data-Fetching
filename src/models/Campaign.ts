@@ -8,16 +8,10 @@ export default class Campaign extends BaseEntity {
   id: string
 
   @Column()
-  account_id: string
-
-  @Column()
   name: string
 
   @Column()
-  effective_status: string
-
-  @Column()
-  objective: string
+  status: string
 
   @Column()
   start_time: Date
@@ -25,11 +19,14 @@ export default class Campaign extends BaseEntity {
   @Column({nullable: true})
   stop_time: Date
 
-  @OneToMany(type => CampaignAd, ad => ad.campaign, {eager: true})
-  ads: CampaignAd[]
+  @Column({nullable: false})
+  platform: String
 
-  @OneToOne(type => CampaignInsight, insight => insight.campaign_id, {eager: true})
-  insight:CampaignInsight
+  // @OneToMany(type => CampaignAd, ad => ad.campaign, {eager: true})
+  // ads: CampaignAd[]
+
+  // @OneToOne(type => CampaignInsight, insight => insight.campaign_id, {eager: true})
+  // insight:CampaignInsight
 }
 
 export interface ICampaign {
