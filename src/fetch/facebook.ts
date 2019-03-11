@@ -33,10 +33,7 @@ export default class Facebook {
         fields: [
           'name', 
           'id', 
-          'account_id', 
-          'create_time',
           'effective_status',
-          'objective',
           'start_time',
           'stop_time', 
         ]} , function (results) {
@@ -46,7 +43,16 @@ export default class Facebook {
         }
 
         const campaigns:ICampaign[] = []
-        results.data.forEach(campaign => campaigns.push(campaign))
+        results.data.forEach(campaign => { 
+          campaigns.push({
+            id: campaign.id,
+            name: campaign.name, 
+            status: campaign.effective_status,
+            startDate: campaign.start_time,
+            stopDate: campaign.stop_time
+          })
+        })
+
         resolve(campaigns)
       })
     })
@@ -60,12 +66,12 @@ export default class Facebook {
       newCampaign = new Campaign()
       newCampaign.id = campaign.id
       newCampaign.name = campaign.name
-      newCampaign.start_time = campaign.start_time
+      newCampaign.startDate = campaign.startDate
       newCampaign.platform = 'FACEBOOK'
-      newCampaign.status = campaign.effective_status
+      newCampaign.status = campaign.status
     }
 
-    newCampaign.stop_time = campaign.start_time
+    newCampaign.stopDate = campaign.stopDate
     await newCampaign.save()
   }
 
@@ -390,7 +396,7 @@ export default class Facebook {
   
 
   public async start() {
-    await this.getCampaigns()
+    // await this.getCampaigns()
     // await this.getCampaignInsights()
     // await this.getAdCreatives()
     // await this.getCampaignAds()

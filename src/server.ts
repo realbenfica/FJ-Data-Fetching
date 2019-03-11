@@ -5,6 +5,7 @@ import google from './fetch/google'
 
 dbSetup().then(() => {
   new facebook().start()
+  new google().start()
 })
  
 
