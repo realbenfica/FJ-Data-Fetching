@@ -5,6 +5,7 @@ import { snakeCase } from 'typeorm/util/StringUtils'
 
 import Campaign from './Campaign/model'
 import CampaignDetail from './CampaignDetail/model'
+import VideoAd from './VideoAd/model'
 
 // import CampaignInsight from './models/CampaignInsight'
 // import CampaignAd from './models/CampaignAd'
@@ -36,7 +37,8 @@ export default () =>
     url: process.env.DATABASE_URL || 'postgres://postgres:secret@localhost:5432/postgres',
     entities: [
       Campaign,
-      CampaignDetail
+      CampaignDetail,
+      VideoAd
     ],
     ssl: true,
     synchronize: true,

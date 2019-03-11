@@ -2,43 +2,56 @@ import {Entity, Column, PrimaryColumn, BaseEntity, ManyToOne, OneToOne} from "ty
 // import Campaign from "./Campaign";
 
 @Entity()
-export default class CampaignAd extends BaseEntity {
+export default class VideoAd extends BaseEntity {
   @PrimaryColumn({unique: true})
   id: string
 
-  @Column({nullable: true})
-  campaign_id:string
+  @Column({nullable: false})
+  name:string //ad_name
 
   @Column({nullable: true})
-  created_time:string
-
-  @Column({nullable: true})
-  creative:string
-
-  @Column({nullable: true})
-  effective_status:string
-
-  @Column({nullable: true})
-  name:string
-
-  @Column({nullable: true})
-  status:string
-
-  @Column({nullable: true})
-  updated_time:string
+  campaignId:string
 
   @Column({nullable: false})
-  video_id:string
+  cpv:string // < cost per impression
+
+  @Column({nullable: false})
+  ctr:string
+
+  @Column({nullable: true})
+  startDate:Date //date_start
+
+  @Column({nullable: true})
+  stopDate: Date //date_stop
+
+  @Column({nullable: false})
+  uniqueView:string //reach
+
+  @Column({nullable: false})
+  spend:string
+
+  @Column({nullable: false})
+  retention:string //video_avg_percent_watched_actions
+
+  @Column({nullable: false})
+  videoId:string
+
+  @Column({nullable: true})
+  thumbnails:string
+
 }
 
-export interface IAd {
-  id: string
-  campaign_id:string
-  created_time:string
-  creative:string
-  effective_status:string
-  name:string
-  status:string
-  updated_time:string
-  video_id:string
+export interface IVideoAd {
+  id: string //ad_id
+  name:string //ad_name
+  campaignId:string
+  cpv:string // < cost per view
+  ctr:string
+  startDate:string //date_start
+  stopDate: string //date_stop
+  uniqueView:string //reach
+  spend:string
+  retention:string //video_avg_percent_watched_actions //retention
+  videoId:string
+  thumbnail:string
 }
