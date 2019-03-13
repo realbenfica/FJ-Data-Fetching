@@ -13,8 +13,6 @@ export default abstract class SocialFetch {
     this.platform = platform
   }
 
-
-
   public start = async () => {
     // await this.getCampaigns()
     // await this.getCampaignDetails()
@@ -33,15 +31,20 @@ export default abstract class SocialFetch {
   }
 
   private getCampaignDetails = async () => {
-    try {
+  
       const campaigns = await Campaign.find({platform: this.platform})
       for(let campaign of campaigns) {
-        const campaignDetail:ICampaignDetail = await this.fetchCampaignDetail(campaign.id)
-        await saveCampaignDetail(campaignDetail)
+        try {
+          const campaignDetail:ICampaignDetail = await this.fetchCampaignDetail(campaign.id)
+          await saveCampaignDetail(campaignDetail)
+        }catch(err) {
+          console.log(err, this.platform)
+        }
+        
       }
-    } catch(err) {
-      console.log(err, this.platform)
-    }
+  
+      
+    
   }
 
   private getVideoAds = async () => {
