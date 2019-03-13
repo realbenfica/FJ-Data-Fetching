@@ -6,22 +6,22 @@ export default class CampaignDetail extends BaseEntity {
   id: string
 
   @Column({nullable: true})
-  uniqueViews: Number
+  uniqueViews: number
 
   @Column('decimal',{nullable: true})
-  ctr: Number
+  ctr: number
 
   @Column('decimal', {nullable: true})
-  cpv:Number
+  cpv:number
 
   @Column('decimal', {nullable: true})
-  retention: Number
+  retention: number
 }
 
 export interface ICampaignDetail {
   id: string
-  uniqueViews: Number
-  ctr: Number
-  cpv:Number
-  retention: Number
+  uniqueViews: number
+  ctr: number
+  cpv:number
+  retention: number
 }

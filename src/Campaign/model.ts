@@ -1,4 +1,5 @@
-import {Entity, Column, PrimaryColumn, BaseEntity, OneToMany, OneToOne} from "typeorm";
+import {Entity, Column, PrimaryColumn, BaseEntity, OneToMany, OneToOne, ManyToOne} from "typeorm";
+import VideoAd from "../VideoAd/model";
 
 @Entity()
 export default class Campaign extends BaseEntity {
@@ -19,6 +20,7 @@ export default class Campaign extends BaseEntity {
 
   @Column({nullable: false})
   platform: String
+
 }
 
 export interface ICampaign {
