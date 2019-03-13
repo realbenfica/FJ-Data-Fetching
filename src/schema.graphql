@@ -20,7 +20,7 @@ type CampaignPerformance {
 }
 
 type VideoAdPerformance {
-  unique_view: String!
+  unique_views: String!
   retention: String!
   cpv: String!
   ctr: String!
