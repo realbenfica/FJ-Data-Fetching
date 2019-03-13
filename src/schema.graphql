@@ -1,6 +1,6 @@
 type Query {
   getCampaigns:SocialCampaigns!
-  getCampaing(id:String!):Campaign!
+  getCampaignsDetails(id:String!):Campaign!
   getAllCampaignPerformance:[CampaignPerformance]!
   getCampaignPerformance(id:String!):CampaignPerformance!
 }
@@ -20,7 +20,7 @@ type CampaignPerformance {
 }
 
 type VideoAdPerformance {
-  unique_views: String!
+  unique_view: String!
   retention: String!
   cpv: String!
   ctr: String!
@@ -28,13 +28,13 @@ type VideoAdPerformance {
   videos: [VideoAd!]!
 }
 
-
 type CampaignDetail {
   unique_views: String!
   ctr: String!
   cpv: String!
-  retention: String
+  retention: String!
 }
+
 
 type Campaign {
   detail: CampaignDetail
@@ -60,7 +60,7 @@ type VideoAd {
   name: String!
   cpv: String!
   ctr: String!
-  unique_views:Int!
+  unique_view:Int
   spend: String!
   retention: String!
   video_id: String!

@@ -14,6 +14,11 @@ const Query = {
     }
   },
 
+  getCampaignsDetails: async (_, params) => {
+    const campaign:Campaign = await  Campaign.findOne({id: params.id})
+    return campaign
+  },
+
   getAllCampaignPerformance: async () => {
     const campaigns: TrackedCampaign[] = await TrackedCampaign.find()
     const comparedCampaigns:IComparedCampaign[] = []
