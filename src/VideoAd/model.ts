@@ -1,4 +1,5 @@
 import {Entity, Column, PrimaryColumn, BaseEntity, ManyToOne, OneToOne} from "typeorm";
+import Campaign from "../Campaign/model";
 // import Campaign from "./Campaign";
 
 @Entity()

@@ -6,11 +6,8 @@ import { snakeCase } from 'typeorm/util/StringUtils'
 import Campaign from './Campaign/model'
 import CampaignDetail from './CampaignDetail/model'
 import VideoAd from './VideoAd/model'
-
-// import CampaignInsight from './models/CampaignInsight'
-// import CampaignAd from './models/CampaignAd'
-// import AdCreative from './models/AdCreative'
-// import CampaignAdInsight from './models/CampaignAdInsight'
+import TrackedCampaign from './TrackedCampaign/model'
+import TrackedCampaignVideoAd from './TrackedCampaignVideoAd/model'
 
 class CustomNamingStrategy extends DefaultNamingStrategy implements NamingStrategyInterface {
 
@@ -38,7 +35,9 @@ export default () =>
     entities: [
       Campaign,
       CampaignDetail,
-      VideoAd
+      VideoAd,
+      TrackedCampaign,
+      TrackedCampaignVideoAd
     ],
     ssl: true,
     synchronize: true,

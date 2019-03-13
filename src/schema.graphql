@@ -1,0 +1,76 @@
+type Query {
+  getCampaigns:SocialCampaigns!
+  getCampaing(id:String!):Campaign!
+  getAllCampaignPerformance:[CampaignPerformance]!
+  getCampaignPerformance(id:String!):CampaignPerformance!
+}
+
+type Mutation {
+  combineCampaign(campaigns:CampaignsInput!, videos:[VideoAdInput!]):String!
+}
+
+type CampaignPerformance {
+  id: String!
+  name: String!
+  unique_views:String!
+  retention: String!
+  cpv: String!
+  ctr: String!
+  videoAdPerformance: [VideoAdPerformance!]!
+}
+
+type VideoAdPerformance {
+  unique_views: String!
+  retention: String!
+  cpv: String!
+  ctr: String!
+  spend: String!
+  videos: [VideoAd!]!
+}
+
+
+type CampaignDetail {
+  unique_views: String!
+  ctr: String!
+  cpv: String!
+  retention: String
+}
+
+type Campaign {
+  detail: CampaignDetail
+  ads: [VideoAd]!
+  name: String!
+  id: String!
+  platform: String!
+}
+
+input CampaignsInput {
+  name: String!
+  facebookCampaignId: String!
+  googleCampaignId: String!
+}
+
+input VideoAdInput {
+  videoAdId: String
+  position: Int
+}
+
+type VideoAd {
+  id: String!
+  name: String!
+  cpv: String!
+  ctr: String!
+  unique_views:Int!
+  spend: String!
+  retention: String!
+  video_id: String!
+  thumbnails: String
+  platform: String
+}
+
+type SocialCampaigns {
+  facebook: [Campaign!]
+  google: [Campaign!]
+}
+
+
