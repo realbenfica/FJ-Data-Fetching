@@ -86,6 +86,7 @@ export const getVideoPerformance = async ( trackedCampaignId:string, position:nu
 
     videos.push({
       id: videoDetail.id,
+      video_id: videoDetail.videoId,
       name: videoDetail.name,
       cpv: videoDetail.cpv,
       ctr: videoDetail.ctr,
@@ -126,6 +127,7 @@ interface IVideoAd {
   retention: string
   thumbnails: string
   platform: string
+  video_id:string
 }
 
 export {

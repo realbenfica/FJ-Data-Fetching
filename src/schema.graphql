@@ -62,7 +62,7 @@ type VideoAd {
   name: String!
   cpv: String!
   ctr: String!
-  unique_view:Int
+  unique_views:Int
   spend: String!
   retention: String!
   video_id: String!
