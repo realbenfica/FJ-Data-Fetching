@@ -3,6 +3,7 @@ type Query {
   getCampaignsDetails(id:String!):Campaign!
   getAllCampaignPerformance:[CampaignPerformance]!
   getCampaignPerformance(id:String!):CampaignPerformance!
+  getVideoAdPerformance(id:String, position:Int!):VideoAdPerformance!
 }
 
 type Mutation {
@@ -20,6 +21,7 @@ type CampaignPerformance {
 }
 
 type VideoAdPerformance {
+  position: Int!
   unique_view: String!
   retention: String!
   cpv: String!

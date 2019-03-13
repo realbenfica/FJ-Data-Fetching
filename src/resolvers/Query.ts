@@ -1,8 +1,8 @@
 import Campaign from "../Campaign/model";
 import TrackedCampaign from "../TrackedCampaign/model"
 import CampaignDetail from "../CampaignDetail/model"
-import chalk from 'chalk'
 import { Any } from 'typeorm'
+import { getVideoPerformance } from '../resolvers/CampaignPerformance'
 
 const Query = {
   getCampaigns: async (_, { where, paginate }:any) => {
@@ -34,6 +34,10 @@ const Query = {
   getCampaignPerformance: async (ctx, {id}) => {
     const campaign: TrackedCampaign = await TrackedCampaign.findOne({id})
     return await getComparedPerformance(campaign.id)
+  },
+
+  getVideoAdPerformance:  async (_, {id, position}) => {
+    return await getVideoPerformance(id, position)
   }
 }
 
