@@ -119,7 +119,7 @@ export default class Facebook extends SocialFetch {
         
         if(result) {
           resolve({
-            cpv: result.cpm,
+            cpv: (result.cpm / 1000).toString(),
             uniqueView: result.reach,
             ctr: result.ctr,
             spend: result.spend,
@@ -150,6 +150,8 @@ export default class Facebook extends SocialFetch {
         if(!results || results.error) {
           reject(results.error)
         }
+
+        console.log(results)
 
         const campaigns:ICampaign[] = []
 
@@ -183,12 +185,14 @@ export default class Facebook extends SocialFetch {
         fields, date_preset:"lifetime"} , function (respond) {
         if(!respond || respond.error) reject(respond.error)
 
+        console.log(respond)
         if(respond && respond.data.length === 1) {
+          console.log(respond)
           const detail:ICampaignDetail = {
             id: campaignId,
             retention: respond.data[0].video_avg_percent_watched_actions && respond.data[0].video_avg_percent_watched_actions[0].value,
             ctr: respond.data[0].ctr,
-            cpv: respond.data[0].cpm,
+            cpv: respond.data[0].cpm / 1000,
             uniqueViews: respond.data[0].reach
           }
           resolve(detail)
